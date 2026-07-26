@@ -1,0 +1,492 @@
+/* ============================================================
+   デザイン設定(手描き・手作り・ゆるい)
+   ここの変数をいじるだけで全体の見た目が変わります。
+   ============================================================ */
+:root {
+  --bg: #faf5ea;             /* ページ背景(生成りの紙) */
+  --bg-panel: #fffdf7;       /* カード背景 */
+  --text: #6a5a4c;           /* 基本の文字色(鉛筆の茶色) */
+  --text-dim: #a5947f;       /* 薄い文字色 */
+  --ink: #7a6a58;            /* 手描き線の色 */
+  --accent: #dd8a6e;         /* アクセント色(テラコッタ) */
+  --marker: #f3e3b5;         /* マーカー・付箋の色(からし色うすめ) */
+  --danger: #c96f6f;         /* 削除ボタンなど */
+  --card-min: 260px;         /* カードの最小幅 */
+
+  /* ふにゃっとした角丸(手描きの枠っぽくするやつ) */
+  --wobble-a: 18px 22px 15px 25px / 22px 15px 25px 18px;
+  --wobble-b: 24px 15px 22px 17px / 16px 24px 15px 23px;
+  --wobble-c: 15px 24px 18px 22px / 24px 18px 22px 15px;
+  --wobble-btn: 14px 18px 12px 20px / 20px 12px 18px 14px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { color-scheme: light; }
+
+body {
+  background-color: var(--bg);
+  /* うっすら紙のざらつき */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.045'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: var(--text);
+  font-family: "Klee One", "Hiragino Maru Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* 背景のらくがきアニメ用キャンバス */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
+}
+
+/* ---------- ヘッダー ---------- */
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: "Yusei Magic", "Klee One", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  width: fit-content;
+  padding: 0 6px 10px;
+  /* 手描きの波線アンダーライン */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 12' preserveAspectRatio='none'%3E%3Cpath d='M4 8 Q 25 3 50 7 T 100 6 T 150 8 T 216 6' fill='none' stroke='%23dd8a6e' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 100% 9px;
+}
+
+h1::before {
+  /* タイトル横の手描きまる */
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.4em;
+  background: transparent;
+  border: 3px solid var(--accent);
+  border-radius: 55% 45% 50% 48% / 48% 52% 46% 54%;
+  transform: rotate(-10deg);
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 200px;
+  padding-left: 6px;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- ボタン共通 ---------- */
+button {
+  font-family: "Yusei Magic", "Klee One", sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg-panel);
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble-btn);
+  padding: 7px 16px;
+  cursor: pointer;
+  box-shadow: 2px 3px 6px rgba(122, 106, 88, 0.15);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+}
+
+button:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: 3px 5px 8px rgba(122, 106, 88, 0.18);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 3px rgba(122, 106, 88, 0.15);
+}
+
+button:disabled {
+  opacity: 0.4;
+  transform: none;
+  cursor: default;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fffdf7;
+}
+
+button.danger { color: var(--danger); border-color: var(--danger); }
+
+/* ---------- タグ絞り込み ---------- */
+.tag-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 26px;
+}
+
+.tag-chip {
+  padding: 3px 14px;
+  font-size: 0.8rem;
+  box-shadow: none;
+}
+
+.tag-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fffdf7;
+}
+
+/* ---------- カードグリッド ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+  gap: 26px;
+}
+
+.card {
+  --tilt: 0deg;
+  --tape: rgba(220, 174, 90, 0.45);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble-a);
+  transform: rotate(var(--tilt));
+  box-shadow: 2px 4px 10px rgba(122, 106, 88, 0.14);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+/* 1枚ごとにちょっとずつ傾き・枠のふにゃり方・テープの色を変える */
+.grid > .card:nth-child(3n) {
+  --tilt: 0.9deg;
+  --tape: rgba(150, 179, 128, 0.45);
+  border-radius: var(--wobble-b);
+}
+.grid > .card:nth-child(3n+1) {
+  --tilt: -0.7deg;
+  --tape: rgba(221, 143, 164, 0.4);
+  border-radius: var(--wobble-c);
+}
+
+/* マスキングテープ */
+.card::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 74px;
+  height: 22px;
+  background: var(--tape);
+  transform: translateX(-50%) rotate(-3deg);
+  border-left: 2px dashed rgba(255, 253, 247, 0.5);
+  border-right: 2px dashed rgba(255, 253, 247, 0.5);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.grid > .card:nth-child(2n)::before { transform: translateX(-50%) rotate(4deg); }
+
+.card:hover {
+  transform: rotate(var(--tilt)) translateY(-4px);
+  box-shadow: 3px 7px 14px rgba(122, 106, 88, 0.2);
+}
+
+/* ルーレット演出 */
+.card.roulette-active {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--card-accent, var(--accent)) 45%, white);
+}
+
+.card.roulette-winner {
+  box-shadow: 0 0 0 4px var(--card-accent, var(--accent)),
+              3px 7px 14px rgba(122, 106, 88, 0.2);
+  animation: winner-pop 0.5s ease;
+}
+
+@keyframes winner-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.05) rotate(-1.5deg); }
+  60%  { transform: scale(0.98) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+
+.card-thumb {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: var(--bg);
+  border-bottom: 2px dashed color-mix(in srgb, var(--ink) 45%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+}
+
+.card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-thumb svg { width: 100%; height: 100%; }
+
+.card-body {
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.card-title {
+  font-family: "Yusei Magic", "Klee One", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--card-accent, var(--accent)) 65%, var(--text));
+}
+
+.card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-title a::after {
+  /* カード全体をクリック範囲にする */
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-tag {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent);
+  border-radius: 10px 14px 9px 13px / 13px 9px 14px 10px;
+  padding: 1px 10px;
+}
+
+.card-footer {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+
+.card-footer button {
+  position: relative; /* カード全体リンクより手前に */
+  z-index: 2;
+  font-size: 0.75rem;
+  padding: 3px 12px;
+  box-shadow: none;
+}
+
+.card.pending { opacity: 0.6; }
+.card.pending .card-title { color: var(--text-dim); }
+
+.badge-pending {
+  font-size: 0.7rem;
+  color: var(--text);
+  background: var(--marker);
+  border-radius: 8px 12px 7px 11px / 11px 7px 12px 8px;
+  padding: 1px 9px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ---------- 編集モード ---------- */
+body.editing .card { border-style: dashed; }
+
+.edit-controls {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 14px;
+}
+
+.edit-controls button { font-size: 0.75rem; padding: 3px 12px; box-shadow: none; }
+
+.card-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  background: transparent;
+  border: 3px dashed color-mix(in srgb, var(--accent) 60%, white);
+  border-radius: var(--wobble-b);
+  color: var(--text-dim);
+  font-size: 1rem;
+  box-shadow: none;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.card-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+/* 未公開バー */
+#draft-bar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+  padding: 12px 16px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  border-radius: var(--wobble-a);
+  box-shadow: 2px 4px 10px rgba(122, 106, 88, 0.18);
+}
+
+#draft-bar.visible { display: flex; }
+
+#draft-bar .note { font-size: 0.82rem; color: var(--text-dim); flex: 1; min-width: 220px; }
+
+/* ---------- 編集ダイアログ ---------- */
+dialog {
+  background: var(--bg-panel);
+  color: var(--text);
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble-a);
+  padding: 24px;
+  width: min(480px, 92vw);
+  box-shadow: 4px 6px 14px rgba(122, 106, 88, 0.25);
+}
+
+dialog::backdrop { background: rgba(106, 90, 76, 0.4); }
+
+dialog h2 {
+  font-family: "Yusei Magic", "Klee One", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 16px;
+  width: fit-content;
+  padding: 0 4px 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M3 6 Q 20 2 40 6 T 80 5 T 117 6' fill='none' stroke='%23dd8a6e' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 100% 7px;
+}
+
+dialog label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin: 12px 0 4px;
+}
+
+dialog input[type="text"],
+dialog input[type="url"],
+dialog textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  border-radius: 10px 14px 9px 13px / 13px 9px 14px 10px;
+  padding: 8px 12px;
+}
+
+dialog input:focus, dialog textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+dialog input[type="color"] {
+  background: var(--bg);
+  border: 2px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  border-radius: 10px;
+  width: 60px;
+  height: 34px;
+  padding: 2px;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.color-row { display: flex; align-items: center; gap: 10px; }
+.color-row button { font-size: 0.75rem; padding: 3px 12px; box-shadow: none; }
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ---------- トースト ---------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 10;
+  background: var(--ink);
+  color: #fffdf7;
+  border-radius: 16px 20px 14px 22px / 22px 14px 20px 16px;
+  padding: 9px 24px;
+  font-size: 0.85rem;
+  box-shadow: 2px 3px 8px rgba(122, 106, 88, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- フッター ---------- */
+footer {
+  margin-top: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+footer button { font-size: 0.75rem; padding: 3px 14px; box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, button { transition: none; }
+  .card.roulette-winner { animation: none; }
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>つくったものまとめ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 id="site-title">リンク集</h1>
+        <p class="subtitle" id="site-subtitle"></p>
+      </div>
+      <div class="header-buttons">
+        <button id="btn-roulette" class="primary">🎲 ランダムで遊ぶ</button>
+      </div>
+    </header>
+
+    <nav class="tag-bar" id="tag-bar"></nav>
+
+    <main class="grid" id="grid"></main>
+
+    <div id="draft-bar">
+      <span class="note">
+        未公開の変更があります(この端末にだけ保存中)。
+        「links.jsをコピー」→ GitHubのlinks.jsに貼り付けると公開されます。
+      </span>
+      <button id="btn-copy-links" class="primary">links.jsをコピー</button>
+      <button id="btn-discard" class="danger">下書きを破棄</button>
+    </div>
+
+    <footer>
+      <span>© あやと</span>
+      <button id="btn-edit">✎ 編集</button>
+    </footer>
+  </div>
+
+  <dialog id="edit-dialog">
+    <h2 id="dialog-title">リンクを編集</h2>
+    <form method="dialog">
+      <label for="f-title">タイトル *</label>
+      <input type="text" id="f-title" placeholder="例: 音響リアクター">
+
+      <label for="f-url">URL(空なら「準備中」表示)</label>
+      <input type="url" id="f-url" placeholder="https://xxxx.github.io/xxxx/">
+
+      <label for="f-desc">説明</label>
+      <textarea id="f-desc" rows="2" placeholder="どんなサイト?"></textarea>
+
+      <label for="f-tags">タグ(カンマ区切り)</label>
+      <input type="text" id="f-tags" placeholder="ゲーム, ツール">
+
+      <label for="f-image">画像(imagesフォルダのファイル名 or URL。空なら自動模様)</label>
+      <input type="text" id="f-image" placeholder="onkyo.png">
+
+      <label for="f-color">アクセント色</label>
+      <div class="color-row">
+        <input type="color" id="f-color" value="#dd8a6e">
+        <button id="f-color-none">共通色に戻す</button>
+      </div>
+
+      <div class="dialog-buttons">
+        <button id="btn-dialog-cancel">キャンセル</button>
+        <button id="btn-dialog-save" class="primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast"></div>
+
+  <script src="links.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
