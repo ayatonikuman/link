@@ -1,58 +1,8 @@
 // ============================================================
-// リンク集 本体スクリプト
-// データは links.js (SITE_CONFIG / SITES) から読む。
-// 編集モードの変更は localStorage に下書き保存され、
-// 「links.jsをコピー」→ GitHubのlinks.jsに貼り付けで公開。
+// つくったものまとめ 本体スクリプト
+// 表示するデータは links.js (SITE_CONFIG / SITES) から読む。
+// 内容を変えたいときは links.js を編集してコミットする。
 // ============================================================
-
-const DRAFT_KEY = "linkshu_draft_v1";
-
-let sites = loadDraft() || structuredClone(SITES);
-let activeTag = "すべて";
-let editing = false;
-let editIndex = -1; // ダイアログで編集中のindex。-1は新規追加
-
-// ---------- 下書き ----------
-function loadDraft() {
-  try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function saveDraft() {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(sites));
-  updateDraftBar();
-}
-
-function discardDraft() {
-  localStorage.removeItem(DRAFT_KEY);
-  sites = structuredClone(SITES);
-  updateDraftBar();
-  renderAll();
-}
-
-function hasDraft() {
-  return localStorage.getItem(DRAFT_KEY) !== null
-    && JSON.stringify(sites) !== JSON.stringify(SITES);
-}
-
-function updateDraftBar() {
-  const bar = document.getElementById("draft-bar");
-  if (hasDraft()) bar.classList.add("visible");
-  else {
-    bar.classList.remove("visible");
-    localStorage.removeItem(DRAFT_KEY);
-  }
-}
-
-// links.js の中身を生成
-function generateLinksJs() {
-  const header = `// リンク集のデータファイル(ページの編集モードから生成)\n\n`;
-  const config = `const SITE_CONFIG = ${JSON.stringify(SITE_CONFIG, null, 2)};\n\n`;
-  const list = `const SITES = ${JSON.stringify(sites, null, 2)};\n`;
-  return header + config + list;
-}
 
 // ---------- クレヨンっぽいくすみ色パレット ----------
 const CRAYON_PALETTE = ["#dd8a6e", "#dcae5a", "#96b380", "#7fa8c9", "#b08bbf", "#dd8fa4"];
@@ -65,8 +15,8 @@ function tint(hex, t) {
   return `rgb(${r},${g},${b})`;
 }
 
-// ---------- エンブレム自動生成 ----------
-// タイトルから決まる乱数で、カードごとに固有のらくがき模様を作る
+// ---------- らくがき模様の自動生成 ----------
+// タイトルから決まる乱数で、カードごとに固有の模様を作る
 function hashStr(s) {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -178,9 +128,11 @@ function emblemSvg(title, color) {
 }
 
 // ---------- 描画 ----------
+let activeTag = "すべて";
+
 function allTags() {
   const set = new Set();
-  sites.forEach(s => (s.tags || []).forEach(t => set.add(t)));
+  SITES.forEach(s => (s.tags || []).forEach(t => set.add(t)));
   return ["すべて", ...set];
 }
 
@@ -191,7 +143,7 @@ function renderTagBar() {
     const b = document.createElement("button");
     b.className = "tag-chip" + (tag === activeTag ? " active" : "");
     b.textContent = tag;
-    b.onclick = () => { activeTag = tag; renderAll(); };
+    b.onclick = () => { activeTag = tag; renderGrid(); renderTagBar(); };
     bar.appendChild(b);
   });
 }
@@ -200,7 +152,7 @@ function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  sites.forEach((site, i) => {
+  SITES.forEach((site, i) => {
     if (activeTag !== "すべて" && !(site.tags || []).includes(activeTag)) return;
 
     const card = document.createElement("article");
@@ -264,8 +216,8 @@ function renderGrid() {
     }
     card.appendChild(body);
 
-    // フッター(共有ボタン)
-    if (site.url && !editing) {
+    // 共有用のコピーボタン
+    if (site.url) {
       const foot = document.createElement("div");
       foot.className = "card-footer";
       const copyBtn = document.createElement("button");
@@ -279,99 +231,8 @@ function renderGrid() {
       card.appendChild(foot);
     }
 
-    // 編集モードの操作ボタン
-    if (editing) {
-      const ctrl = document.createElement("div");
-      ctrl.className = "edit-controls";
-
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "編集";
-      editBtn.onclick = (e) => { e.preventDefault(); openDialog(i); };
-
-      const upBtn = document.createElement("button");
-      upBtn.textContent = "↑";
-      upBtn.disabled = i === 0;
-      upBtn.onclick = (e) => {
-        e.preventDefault();
-        [sites[i - 1], sites[i]] = [sites[i], sites[i - 1]];
-        saveDraft(); renderAll();
-      };
-
-      const downBtn = document.createElement("button");
-      downBtn.textContent = "↓";
-      downBtn.disabled = i === sites.length - 1;
-      downBtn.onclick = (e) => {
-        e.preventDefault();
-        [sites[i], sites[i + 1]] = [sites[i + 1], sites[i]];
-        saveDraft(); renderAll();
-      };
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "danger";
-      delBtn.textContent = "削除";
-      delBtn.onclick = (e) => {
-        e.preventDefault();
-        if (confirm(`「${site.title}」を削除しますか?`)) {
-          sites.splice(i, 1);
-          saveDraft(); renderAll();
-        }
-      };
-
-      ctrl.append(editBtn, upBtn, downBtn, delBtn);
-      card.appendChild(ctrl);
-    }
-
     grid.appendChild(card);
   });
-
-  // 追加カード
-  if (editing) {
-    const add = document.createElement("button");
-    add.className = "card-add";
-    add.textContent = "＋ リンクを追加";
-    add.onclick = () => openDialog(-1);
-    grid.appendChild(add);
-  }
-}
-
-function renderAll() {
-  renderTagBar();
-  renderGrid();
-  updateDraftBar();
-}
-
-// ---------- 編集ダイアログ ----------
-function openDialog(index) {
-  editIndex = index;
-  const site = index >= 0 ? sites[index] : { title: "", url: "", desc: "", tags: [], image: "", color: "" };
-  document.getElementById("f-title").value = site.title;
-  document.getElementById("f-url").value = site.url;
-  document.getElementById("f-desc").value = site.desc || "";
-  document.getElementById("f-tags").value = (site.tags || []).join(", ");
-  document.getElementById("f-image").value = site.image || "";
-  document.getElementById("f-color").value = site.color || "#dd8a6e";
-  document.getElementById("f-color-none").dataset.none = site.color ? "" : "1";
-  document.getElementById("dialog-title").textContent = index >= 0 ? "リンクを編集" : "リンクを追加";
-  document.getElementById("edit-dialog").showModal();
-}
-
-function submitDialog() {
-  const title = document.getElementById("f-title").value.trim();
-  if (!title) { toast("タイトルを入れてください"); return; }
-  const colorNone = document.getElementById("f-color-none").dataset.none === "1";
-  const site = {
-    title,
-    url: document.getElementById("f-url").value.trim(),
-    desc: document.getElementById("f-desc").value.trim(),
-    tags: document.getElementById("f-tags").value.split(/[,、]/).map(t => t.trim()).filter(Boolean),
-    image: document.getElementById("f-image").value.trim(),
-    color: colorNone ? "" : document.getElementById("f-color").value
-  };
-  if (editIndex >= 0) sites[editIndex] = site;
-  else sites.push(site);
-  saveDraft();
-  document.getElementById("edit-dialog").close();
-  renderAll();
 }
 
 // ---------- ルーレット ----------
@@ -398,7 +259,7 @@ async function roulette() {
   prev.classList.remove("roulette-active");
   prev.classList.add("roulette-winner");
   prev.scrollIntoView({ behavior: "smooth", block: "center" });
-  const title = sites[+prev.dataset.index]?.title || "";
+  const title = SITES[+prev.dataset.index]?.title || "";
   toast(`今日はこれ → 「${title}」`);
   rouletteRunning = false;
 }
@@ -533,36 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("btn-roulette").onclick = roulette;
 
-  document.getElementById("btn-edit").onclick = () => {
-    editing = !editing;
-    document.body.classList.toggle("editing", editing);
-    document.getElementById("btn-edit").textContent = editing ? "✔ 編集を終える" : "✎ 編集";
-    renderAll();
-  };
-
-  document.getElementById("btn-copy-links").onclick = async () => {
-    await navigator.clipboard.writeText(generateLinksJs());
-    toast("links.jsの中身をコピーしました。GitHubのlinks.jsに貼り付けて公開!");
-  };
-
-  document.getElementById("btn-discard").onclick = () => {
-    if (confirm("下書きを破棄して公開中の内容に戻しますか?")) discardDraft();
-  };
-
-  document.getElementById("btn-dialog-save").onclick = (e) => { e.preventDefault(); submitDialog(); };
-  document.getElementById("btn-dialog-cancel").onclick = (e) => {
-    e.preventDefault();
-    document.getElementById("edit-dialog").close();
-  };
-  document.getElementById("f-color").oninput = () => {
-    document.getElementById("f-color-none").dataset.none = "";
-  };
-  document.getElementById("f-color-none").onclick = (e) => {
-    e.preventDefault();
-    e.target.dataset.none = "1";
-    toast("共通色を使います");
-  };
-
   startBackground();
-  renderAll();
+  renderTagBar();
+  renderGrid();
 });
