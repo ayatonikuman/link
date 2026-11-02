@@ -103,6 +103,86 @@ const SITES = [
     color: ""
   },
   {
+    title: "ヤギのナンプレ",
+    url: "https://ayatonikuman.github.io/yagisudoku/",
+    desc: "数字は岩の高さ。ヤギは一番高い隣へ跳び、全員を別々の旗へ。",
+    tags: ["ゲーム"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "二重振り子",
+    url: "https://ayatonikuman.github.io/furiko/",
+    desc: "二重振り子を振り出して飛距離を競う。決められるのは開始姿勢だけ。",
+    tags: ["ゲーム"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "徒労 -TOROU-",
+    url: "https://ayatonikuman.github.io/dopagaki1/",
+    desc: "終わりのない落下をただ並走する。死なないし、説明もない。",
+    tags: ["ゲーム"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "桁 -KETA-",
+    url: "https://ayatonikuman.github.io/dopagaki2/",
+    desc: "数字の桁が壊れていく縦スクロールシューティング。",
+    tags: ["ゲーム"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "粒子場",
+    url: "https://ayatonikuman.github.io/dopagaki3/",
+    desc: "カメラ映像の上を漂う粒が、近づいた体に反応して散る。",
+    tags: ["ビジュアル"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "車窓ラン",
+    url: "https://ayatonikuman.github.io/shasourun/",
+    desc: "カメラに映った景色の稜線を地形にして、キャラが跳ねて走る。",
+    tags: ["ゲーム"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "アリの運び屋",
+    url: "https://ayatonikuman.github.io/arisan/",
+    desc: "選んだ画像を、アリの群れが少しずつ巣へ運び去る。",
+    tags: ["ビジュアル"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "電験三種 理論 巻き返しプラン",
+    url: "https://ayatonikuman.github.io/denken3/",
+    desc: "試験までの理論の学習計画。",
+    tags: ["勉強"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "電験三種 電力",
+    url: "https://ayatonikuman.github.io/denkendenryoku/",
+    desc: "電力分野をステップごとに解説＋ドリル。",
+    tags: ["勉強"],
+    image: "",
+    color: ""
+  },
+  {
+    title: "電験三種 理論・電子分野",
+    url: "https://ayatonikuman.github.io/denkendenshiriron/",
+    desc: "電子分野の詰め込みノート。",
+    tags: ["勉強"],
+    image: "",
+    color: ""
+  },
+  {
     title: "音響リアクター",
     url: "",
     desc: "音とタッチに反応するビジュアライザー。3シーン切り替え。",
