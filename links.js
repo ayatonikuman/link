@@ -159,30 +159,6 @@ const SITES = [
     color: ""
   },
   {
-    title: "電験三種 理論 巻き返しプラン",
-    url: "https://ayatonikuman.github.io/denken3/",
-    desc: "試験までの理論の学習計画。",
-    tags: ["勉強"],
-    image: "",
-    color: ""
-  },
-  {
-    title: "電験三種 電力",
-    url: "https://ayatonikuman.github.io/denkendenryoku/",
-    desc: "電力分野をステップごとに解説＋ドリル。",
-    tags: ["勉強"],
-    image: "",
-    color: ""
-  },
-  {
-    title: "電験三種 理論・電子分野",
-    url: "https://ayatonikuman.github.io/denkendenshiriron/",
-    desc: "電子分野の詰め込みノート。",
-    tags: ["勉強"],
-    image: "",
-    color: ""
-  },
-  {
     title: "音響リアクター",
     url: "",
     desc: "音とタッチに反応するビジュアライザー。3シーン切り替え。",
